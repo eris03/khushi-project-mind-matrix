@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3B1F0C"/>
+      <stop offset="60%" stop-color="#2A1508"/>
+      <stop offset="100%" stop-color="#160A02"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F0C96A"/>
+      <stop offset="100%" stop-color="#C8882A"/>
+    </linearGradient>
+    <linearGradient id="goldV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F0C96A"/>
+      <stop offset="100%" stop-color="#C8882A"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#D4933A" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#D4933A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softBlur">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Ambient glow -->
+  <ellipse cx="256" cy="200" rx="230" ry="170" fill="url(#glow)"/>
+
+  <!-- Outer decorative ring -->
+  <circle cx="256" cy="240" r="168" fill="none" stroke="#C8882A" stroke-width="1" opacity="0.2"/>
+  <!-- Inner decorative ring -->
+  <circle cx="256" cy="240" r="142" fill="none" stroke="#F0C96A" stroke-width="0.75" opacity="0.12"/>
+
+  <!-- Corner ornament dots — top -->
+  <circle cx="194" cy="108" r="3.5" fill="#C8882A" opacity="0.45"/>
+  <circle cx="256" cy="96"  r="3.5" fill="#F0C96A" opacity="0.6"/>
+  <circle cx="318" cy="108" r="3.5" fill="#C8882A" opacity="0.45"/>
+
+  <!-- Open book — left page outline -->
+  <path d="M 118 310 C 118 260 170 200 256 208 L 256 340 C 200 338 140 328 118 310 Z"
+        fill="none" stroke="url(#gold)" stroke-width="2.2" stroke-linejoin="round" opacity="0.7"/>
+  <!-- Open book — right page outline -->
+  <path d="M 394 310 C 394 260 342 200 256 208 L 256 340 C 312 338 372 328 394 310 Z"
+        fill="none" stroke="url(#gold)" stroke-width="2.2" stroke-linejoin="round" opacity="0.7"/>
+  <!-- Book spine -->
+  <line x1="256" y1="208" x2="256" y2="340" stroke="url(#goldV)" stroke-width="2.5" opacity="0.9"/>
+
+  <!-- Page lines — left -->
+  <line x1="152" y1="268" x2="240" y2="264" stroke="#F0C96A" stroke-width="1" opacity="0.18"/>
+  <line x1="148" y1="283" x2="239" y2="279" stroke="#F0C96A" stroke-width="1" opacity="0.14"/>
+  <line x1="145" y1="298" x2="238" y2="295" stroke="#F0C96A" stroke-width="1" opacity="0.10"/>
+  <!-- Page lines — right -->
+  <line x1="360" y1="268" x2="272" y2="264" stroke="#F0C96A" stroke-width="1" opacity="0.18"/>
+  <line x1="364" y1="283" x2="273" y2="279" stroke="#F0C96A" stroke-width="1" opacity="0.14"/>
+  <line x1="367" y1="298" x2="274" y2="295" stroke="#F0C96A" stroke-width="1" opacity="0.10"/>
+
+  <!-- Central Kannada letter ಕ -->
+  <text
+    x="256" y="252"
+    font-family="'Noto Serif Kannada','Noto Sans Kannada','Arial Unicode MS',serif"
+    font-size="136"
+    font-weight="700"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    fill="url(#gold)">ಕ</text>
+
+  <!-- Thin divider line -->
+  <line x1="156" y1="370" x2="356" y2="370" stroke="#C8882A" stroke-width="0.8" opacity="0.35"/>
+
+  <!-- App name -->
+  <text
+    x="256" y="396"
+    font-family="'Noto Serif Kannada','Noto Sans Kannada',serif"
+    font-size="30"
+    font-weight="600"
+    text-anchor="middle"
+    fill="#FDF6E3"
+    opacity="0.65"
+    letter-spacing="4">ಕಾವ್ಯ ಕಣಜ</text>
+
+  <!-- Bottom ornament dots -->
+  <circle cx="216" cy="432" r="2.5" fill="#C8882A" opacity="0.35"/>
+  <circle cx="256" cy="432" r="3"   fill="#F0C96A" opacity="0.55"/>
+  <circle cx="296" cy="432" r="2.5" fill="#C8882A" opacity="0.35"/>
+</svg>
