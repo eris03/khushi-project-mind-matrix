@@ -255,6 +255,8 @@ export default function PoemDetail() {
 
       utteranceRef.current = utterance;
       window.speechSynthesis.speak(utterance);
+      // Android WebView: onstart event may never fire — set playing state immediately
+      setIsPlaying(true);
     } else if (audioRef.current) {
       audioRef.current.play().catch(() => {
         setUseTTS(true);
@@ -349,7 +351,7 @@ export default function PoemDetail() {
       className={cn(
         "min-h-screen transition-colors duration-1000 pt-6 px-4 md:px-0",
         themeStyles[readingTheme],
-        isFocusMode ? "pb-12" : "pb-64"
+        isFocusMode ? "pb-12" : "pb-52"
       )}
     >
       {/* Background Ambience */}
@@ -606,6 +608,134 @@ export default function PoemDetail() {
         </motion.div>
       </AnimatePresence>
 
+
+      {/* ── Floating Audio Player ────────────────────────────── */}
+      <AnimatePresence>
+        {!isFocusMode && poem && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 260 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[94%] max-w-lg z-40"
+          >
+            <div
+              className="rounded-[2rem] overflow-hidden shadow-2xl relative"
+              style={{
+                background: 'rgba(30,20,10,0.93)',
+                border: '1px solid rgba(200,160,80,0.25)',
+                backdropFilter: 'blur(24px)',
+              }}
+            >
+              {/* Animated visualiser background */}
+              <div className="absolute inset-0 opacity-[0.07] pointer-events-none overflow-hidden rounded-[2rem]">
+                <div className="flex items-end h-full px-2 gap-[2px]">
+                  {vizHeights.map((h, i) => (
+                    <motion.div
+                      key={i}
+                      animate={isPlaying
+                        ? { height: [`${h}%`, `${Math.min(h + 35, 100)}%`, `${h}%`] }
+                        : { height: '5%' }}
+                      transition={{ duration: 0.7 + (i % 4) * 0.18, repeat: Infinity, ease: 'easeInOut' }}
+                      className="flex-1 rounded-t-sm"
+                      style={{ background: '#C8A050' }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="relative z-10 p-4 space-y-2">
+                {/* Progress bar */}
+                <div
+                  className="h-1 rounded-full overflow-hidden"
+                  style={{ background: 'rgba(200,160,80,0.15)' }}
+                >
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ background: 'linear-gradient(90deg, #C8A050, #F5D485)' }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {/* TTS / Audio mode toggle */}
+                  <button
+                    onClick={() => {
+                      if (isPlaying) {
+                        window.speechSynthesis.cancel();
+                        audioRef.current?.pause();
+                        setIsPlaying(false);
+                      }
+                      setUseTTS(v => !v);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all shrink-0"
+                    style={{
+                      background: useTTS ? 'rgba(200,160,80,0.2)' : 'rgba(255,255,255,0.06)',
+                      border: `1px solid ${useTTS ? 'rgba(200,160,80,0.4)' : 'rgba(255,255,255,0.1)'}`,
+                      color: useTTS ? '#C8A050' : 'rgba(255,255,255,0.4)',
+                    }}
+                  >
+                    <Mic size={12} />
+                    {useTTS ? 'Voice' : 'Audio'}
+                  </button>
+
+                  {/* Title + status */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold truncate" style={{ color: '#FDF6E3' }}>
+                      {poem.title[language as keyof typeof poem.title]}
+                    </p>
+                    <p className="text-[9px]" style={{ color: 'rgba(200,160,80,0.6)' }}>
+                      {isPreparing
+                        ? 'Preparing…'
+                        : audioRef.current && !useTTS
+                          ? `${formatTime(currentTime)} / ${formatTime(duration)}`
+                          : isPlaying ? 'Reading aloud…' : 'Tap ▶ to listen'}
+                    </p>
+                  </div>
+
+                  {/* Share as image */}
+                  <button
+                    onClick={shareAsImage}
+                    className="p-2.5 rounded-xl transition-all shrink-0"
+                    style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.35)' }}
+                    title="Save as image"
+                  >
+                    <Download size={16} />
+                  </button>
+
+                  {/* Play / Pause */}
+                  <motion.button
+                    onClick={togglePlay}
+                    disabled={isPreparing}
+                    whileTap={{ scale: 0.92 }}
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shrink-0"
+                    style={{
+                      background: isPreparing
+                        ? 'rgba(200,160,80,0.4)'
+                        : 'linear-gradient(135deg, #C8A050 0%, #8B6A20 100%)',
+                      color: '#FDF6E3',
+                      cursor: isPreparing ? 'wait' : 'pointer',
+                    }}
+                  >
+                    {isPreparing ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        className="w-5 h-5 rounded-full border-2 border-current border-t-transparent"
+                      />
+                    ) : isPlaying ? (
+                      <Pause size={20} fill="currentColor" />
+                    ) : (
+                      <Play size={20} fill="currentColor" className="ml-0.5" />
+                    )}
+                  </motion.button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Word Insight Bottom Sheet */}
       <AnimatePresence>

@@ -1,12 +1,15 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import { Capacitor } from '@capacitor/core';
 import firebaseConfig from '../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 // Connection test
 async function testConnection() {
@@ -20,4 +23,11 @@ async function testConnection() {
 }
 testConnection();
 
-export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
+// On Android (Capacitor), signInWithPopup does not work inside a WebView.
+// We use signInWithRedirect for native apps and signInWithPopup for web.
+export const signInWithGoogle = () => {
+  if (Capacitor.isNativePlatform()) {
+    return signInWithRedirect(auth, googleProvider);
+  }
+  return signInWithPopup(auth, googleProvider);
+};

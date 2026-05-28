@@ -4,8 +4,11 @@
  */
 
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
+import { getRedirectResult } from 'firebase/auth';
+import { auth } from './firebase';
+import { Capacitor } from '@capacitor/core';
 import SplashScreen from './components/SplashScreen';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -82,12 +85,25 @@ function AppRoutes() {
 }
 
 export default function App() {
+  // On native Android, handle the Google Sign-In redirect result on app load
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      getRedirectResult(auth).catch(() => {
+        // Ignore errors — no redirect result on normal app open
+      });
+    }
+  }, []);
+
+  // Use HashRouter on Android (Capacitor) for reliable deep-link routing
+  // Use BrowserRouter on web
+  const Router = Capacitor.isNativePlatform() ? HashRouter : BrowserRouter;
+
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <BrowserRouter>
+        <Router>
           <AppRoutes />
-        </BrowserRouter>
+        </Router>
       </LanguageProvider>
     </ThemeProvider>
   );

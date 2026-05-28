@@ -146,6 +146,8 @@ export default function Listen() {
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
+    // Android WebView: onstart event may never fire — set playing state immediately
+    setIsPlaying(true);
   };
 
   return (
